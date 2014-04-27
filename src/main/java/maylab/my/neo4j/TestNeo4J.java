@@ -9,8 +9,10 @@ import org.neo4j.gis.spatial.pipes.GeoPipeFlow;
 import org.neo4j.gis.spatial.pipes.GeoPipeline;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class TestNeo4J {
@@ -38,6 +40,14 @@ public class TestNeo4J {
     
     public void createTestNodes() {
     	Transaction tx = null; 
+    	
+    	try {
+    		Node node = graphDb.getNodeById(5);
+    		return;
+    	} catch(NotFoundException e){
+    		System.out.println(e);
+    	}
+    	
     	try {
     		tx = graphDb.beginTx();
 
@@ -76,7 +86,7 @@ public class TestNeo4J {
     public void testFindClosest(){
     	Coordinate coordinate = new Coordinate(43.14720, 11.59362);
     	List<GeoPipeFlow> points = GeoPipeline
-                .startNearestNeighborLatLonSearch(layer, coordinate, 1.0)
+                .startNearestNeighborLatLonSearch(layer, coordinate, 0.5)
                 .sort("OrthodromicDistance").toList();
     	System.out.println("Closest points " + points.size());
     	checkPointOrder(points);
